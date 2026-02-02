@@ -11,7 +11,27 @@
     <!-- <h1 class="text-3xl font-bold underline text-blue-600">
       Hello world!
     </h1> -->
-    <div class="flex flex-col max-w-md mx-auto mt-30">
+    <div id="success" class="absolute left-0 right-0 mx-auto bg-black/0
+      top-20 w-full h-full backdrop-blur-sm hidden">
+      <div
+      class="w-30 h-30 border-8 border-t-blue-500 border-gray-300 rounded-full animate-spin
+      mx-auto mt-30"
+      ></div>
+      <p class="text-slate-400 text-center mt-5">
+        Attendez s'il vous plait...
+      </p>
+    </div>
+    <div id="loader" class="absolute left-0 right-0 mx-auto bg-black/0
+      top-20 w-full h-full backdrop-blur-sm hidden">
+      <div
+      class="w-30 h-30 border-8 border-t-blue-500 border-gray-300 rounded-full animate-spin
+      mx-auto mt-30"
+      ></div>
+      <p class="text-slate-400 text-center mt-5">
+        Attendez s'il vous plait...
+      </p>
+    </div>
+    <div id="buttons" class="flex flex-col max-w-md mx-auto mt-30">
       <button id="coupable" class="
         flex-1
         bg-rose-500
@@ -39,7 +59,7 @@
         text-3xl">
         non coupable
       </button>
-      <button id="vote" class="
+      <button id="judge" class="
         flex-1
         w-40 mx-auto
         rounded-3xl
