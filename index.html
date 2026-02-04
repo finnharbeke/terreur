@@ -11,6 +11,16 @@
     <!-- <h1 class="text-3xl font-bold underline text-blue-600">
       Hello world!
     </h1> -->
+    <div id="loader" class="absolute left-0 right-0 top-0 mx-auto bg-black/40
+      w-full h-full backdrop-blur-sm hidden">
+      <div
+      class="w-30 h-30 border-8 border-t-blue-500 border-gray-300 rounded-full animate-spin
+      mx-auto mt-30"
+      ></div>
+      <p class="text-slate-400 text-center mt-5 text-xl">
+        Attendez s'il vous plait...
+      </p>
+    </div>
     <div id="config" class="absolute left-0 right-0 mx-auto bg-black/0
       top-20 w-1/2 bg-zinc-800 rounded-lg border-8 border-zinc-700 hidden">
 
@@ -37,7 +47,7 @@
         create</button>
         <p id="newround_note" class="text-red-400 text-sm italic mt-1 mb-3"></p>
 
-        <button id="newround_button" class="
+        <button id="view-results" class="
         w-full
         bg-sky-500
         hover:bg-sky-600
@@ -52,26 +62,31 @@
         mb-25">
         view results</button>
       </div>
-      
     </div>
-    <div id="loader" class="absolute left-0 right-0 mx-auto bg-black/0
-      top-20 w-full h-full backdrop-blur-sm hidden">
-      <div
-      class="w-30 h-30 border-8 border-t-blue-500 border-gray-300 rounded-full animate-spin
-      mx-auto mt-30"
-      ></div>
-      <p class="text-slate-400 text-center mt-5">
-        Attendez s'il vous plait...
-      </p>
+    <div id="results" class="absolute left-0 right-0 top-0 mx-auto
+      w-full h-full bg-[#222222] text-center hidden">
+
+      <h1 class="text-[80px] text-zinc-400">Votre sentence:</h1>
+      <h1 class="text-[100px]" id="judgement">Laura Koch est coupable!</h1>
+        
+      <div class="grid grid-cols-3 gap-0 justify-center text-[40px] text-zinc-400 w-2/3 mx-auto">
+        <span class="">Coupable</span>
+        <span class=""></span>
+        <span class="">Non-coupable</span>
+        <span class="text-[100px]" id="nr-coupable">5</span>
+        <span class="text-[100px]">vs</span>
+        <span class="text-[100px]" id="nr-noncoupable">5</span>
+      </div>
+
     </div>
     <div id="buttons" class="flex flex-col max-w-md mx-auto mt-30">
       <button id="coupable" class="
         flex-1
-        bg-rose-500
-        hover:bg-rose-600
+        bg-amber-500
+        hover:bg-amber-600
         focus:outline-2 focus:outline-offset-1
-        focus:outline-rose-500
-        active:bg-rose-700
+        focus:outline-amber-500
+        active:bg-amber-700
 
         text-3xl
         p-2
@@ -82,11 +97,11 @@
       <button id="non-coupable" class="
         flex-1
         
-        bg-emerald-500
-        hover:bg-emerald-600
+        bg-fuchsia-500
+        hover:bg-fuchsia-600
         focus:outline-2 focus:outline-offset-1
-        focus:outline-emerald-500
-        active:bg-emerald-700
+        focus:outline-fuchsia-500
+        active:bg-fuchsia-700
 
         p-2
         text-3xl">

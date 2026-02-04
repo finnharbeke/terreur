@@ -4,6 +4,7 @@ const COOLDOWN = 5000;
 
 let guilty: boolean | null = null;
 let config_open = false;
+let results_open = false;
 
 document.querySelector<HTMLButtonElement>('#coupable')!.onclick = () => {
   guilty = true;
@@ -32,6 +33,11 @@ fill_select();
 document.addEventListener("keydown", (e) => {
   if (e.key != 'k' || !e.metaKey)
     return;
+  if (results_open) {
+    document.querySelector<HTMLDivElement>('#results')?.classList.add("hidden");
+    results_open = false;
+    return;
+  }
   if (config_open)
     document.querySelector<HTMLDivElement>('#config')?.classList.add("hidden");
   else
@@ -107,11 +113,11 @@ document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
   }).then(() => {
       if (guilty) {
         note.innerHTML = `
-        Vous avez votez <span class="text-rose-300">coupable</span>!
+        Vous avez votez <span class="text-amber-300">coupable</span>!
         `;
       } else {
         note.innerHTML = `
-          Vous avez votez <span class="text-emerald-300">non coupable</span>!
+          Vous avez votez <span class="text-fuchsia-300">non coupable</span>!
         `;
       }
   })
@@ -131,3 +137,22 @@ document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
     }, SUCCESS_TIME);
   })
 };
+
+document.querySelector<HTMLButtonElement>('#view-results')!.onclick = () => {
+  let round_id = document.querySelector<HTMLButtonElement>('#round-select')!.value;
+  fetch(`http://127.0.0.1:5000/results/${round_id}`)
+  .then((data) => data.json())
+  .then(({guilty, innocent}: {guilty: number, innocent: number}) => {
+    document.querySelector<HTMLSpanElement>('#nr-coupable')!.innerText = guilty.toString();
+    document.querySelector<HTMLSpanElement>('#nr-noncoupable')!.innerText = innocent.toString();
+    if (guilty == innocent)
+      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'draw';
+    else if (guilty > innocent)
+      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'Laura Koch est coupable!';
+    else
+      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'Laura Koch est non-coupable!';
+    
+    document.querySelector<HTMLSpanElement>('#results')!.classList.remove("hidden");
+    results_open = true;
+  })
+}
