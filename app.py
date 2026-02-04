@@ -68,13 +68,16 @@ def create_round():
 
 INSERT_VOTE = """INSERT INTO vote (round_id, guilty, datetime) VALUES (?, ?, ?);"""
 
-@app.route("/coupable", methods=["POST"])
+@app.route("/vote", methods=["POST", "OPTIONS"])
 def coupable():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
     data = json.loads(request.data.decode())
+    print(data)
     if "round_id" not in data:
         return "missing `round_id` field in request", HTTPStatus.BAD_REQUEST
     round_id = data["round_id"]
-
-    conn.execute(INSERT_VOTE, (round_id, 1, dt.datetime.now().isoformat()))
+    guilty = data["guilty"]
+    conn.execute(INSERT_VOTE, (round_id, int(guilty), dt.datetime.now().isoformat()))
     conn.commit()
-    return "created", HTTPStatus.CREATED
+    return _corsify(make_response("created", HTTPStatus.CREATED))

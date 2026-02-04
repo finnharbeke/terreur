@@ -92,27 +92,42 @@ document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
   }
   let button = document.querySelector<HTMLParagraphElement>('#judge')!;
   button.setAttribute("disabled", "true");
-  if (guilty) {
-    note.innerHTML = `
-    Vous avez votez <span class="text-rose-300">coupable</span>!
-    `;
-  } else {
-    note.innerHTML = `
-      Vous avez votez <span class="text-emerald-300">non coupable</span>!
-    `;
-  }
-  guilty = null;
-  setTimeout(() => {
-    button.removeAttribute("disabled");
-    note.innerHTML = '';
-    let loader = document.querySelector<HTMLDivElement>('#loader')!;
-    loader.classList.remove("hidden");
+  let round_id = document.querySelector<HTMLSelectElement>('#round-select')!.value;
+
+  fetch("http://127.0.0.1:5000/vote", {
+    method: "post",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        round_id,
+        guilty
+    })
+  }).then(() => {
+      if (guilty) {
+        note.innerHTML = `
+        Vous avez votez <span class="text-rose-300">coupable</span>!
+        `;
+      } else {
+        note.innerHTML = `
+          Vous avez votez <span class="text-emerald-300">non coupable</span>!
+        `;
+      }
+  })
+  .catch(() => {
+    note.innerText = '<span class="text-red-300">error:</span> couldn\'t create round';
+  })
+  .finally(() => {
+    guilty = null;
     setTimeout(() => {
-      loader.classList.add("hidden");
-    }, COOLDOWN)
-  }, SUCCESS_TIME);
-    // wait = true;
-    // setTimeout(() => {
-    //   wait = false;
-    // }, 15000)
+      button.removeAttribute("disabled");
+      note.innerHTML = '';
+      let loader = document.querySelector<HTMLDivElement>('#loader')!;
+      loader.classList.remove("hidden");
+      setTimeout(() => {
+        loader.classList.add("hidden");
+      }, COOLDOWN)
+    }, SUCCESS_TIME);
+  })
 };
