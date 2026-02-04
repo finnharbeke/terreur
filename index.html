@@ -11,15 +11,48 @@
     <!-- <h1 class="text-3xl font-bold underline text-blue-600">
       Hello world!
     </h1> -->
-    <div id="success" class="absolute left-0 right-0 mx-auto bg-black/0
-      top-20 w-full h-full backdrop-blur-sm hidden">
-      <div
-      class="w-30 h-30 border-8 border-t-blue-500 border-gray-300 rounded-full animate-spin
-      mx-auto mt-30"
-      ></div>
-      <p class="text-slate-400 text-center mt-5">
-        Attendez s'il vous plait...
-      </p>
+    <div id="config" class="absolute left-0 right-0 mx-auto bg-black/0
+      top-20 w-1/2 bg-zinc-800 rounded-lg border-8 border-zinc-700 hidden">
+
+      <div class="max-w-sm mx-auto text-zinc-300 mt-2">
+        <label for="round-select">round</label>
+        <select name="round" id="round-select" class=
+        "block w-full mt-1 mb-3 pl-3 pr-10 py-2.5 border border-zinc-700 text-sm rounded-xl shadow-xs placeholder:text-body focus:outline-none"
+        ></select>
+        <label for="newround">create a new round</label>
+        <input name="newround" id="newround_input" placeholder="round name" class=
+        "block w-full mt-1 mb-1 pl-3 pr-10 py-2.5 border border-zinc-700 text-sm rounded-xl shadow-xs placeholder:text-body focus:outline-none"
+        ></input>
+        <button id="newround_button" class="
+        w-full
+        bg-sky-700
+        hover:bg-sky-800
+        focus:outline-2 focus:outline-offset-1
+        focus:outline-sky-700
+        active:bg-sky-900
+
+        rounded-xl
+        text-lg
+        p-1">
+        create</button>
+        <p id="newround_note" class="text-red-400 text-sm italic mt-1 mb-3"></p>
+
+        <button id="newround_button" class="
+        w-full
+        bg-sky-500
+        hover:bg-sky-600
+        focus:outline-2 focus:outline-offset-1
+        focus:outline-sky-500
+        active:bg-sky-700
+
+        rounded-xl
+        text-3xl
+        p-1
+        mt-10
+        mb-25">
+        view results</button>
+      </div>
+      
     </div>
     <div id="loader" class="absolute left-0 right-0 mx-auto bg-black/0
       top-20 w-full h-full backdrop-blur-sm hidden">
