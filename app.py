@@ -69,7 +69,7 @@ def create_round():
 INSERT_VOTE = """INSERT INTO vote (round_id, guilty, datetime) VALUES (?, ?, ?);"""
 
 @app.route("/vote", methods=["POST", "OPTIONS"])
-def coupable():
+def vote():
     if request.method == "OPTIONS":
         return _build_cors_preflight_response()
     data = json.loads(request.data.decode())
@@ -81,3 +81,20 @@ def coupable():
     conn.execute(INSERT_VOTE, (round_id, int(guilty), dt.datetime.now().isoformat()))
     conn.commit()
     return _corsify(make_response("created", HTTPStatus.CREATED))
+
+@app.route("/results/<int:round_id>")
+def results(round_id):
+    CHECK_EXISTS = "SELECT * FROM round WHERE id = ?"
+    r = conn.execute(CHECK_EXISTS, (round_id,)).fetchone()
+    if r is None:
+        return _corsify(make_response(f"round_id {round_id} does not exist", HTTPStatus.NOT_FOUND))
+    QUERY = "SELECT guilty FROM vote WHERE round_id = ?"
+    votes = conn.execute(QUERY, (round_id,)).fetchall() # [(1,), (0,), ..]
+    votes, = zip(*votes) # (1, 0, ..)
+
+    results = dict(
+        guilty = sum(votes),
+        innocent = len(votes) - sum(votes),
+    )
+
+    return _corsify(jsonify(results))
