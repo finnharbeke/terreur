@@ -13,7 +13,9 @@ document.querySelector<HTMLButtonElement>('#non-coupable')!.onclick = () => {
   guilty = false;
 };
 
-const fill_select = () => fetch("http://127.0.0.1:5000/rounds")
+document.addEventListener("touchstart", function(){}, true)
+
+const fill_select = () => fetch("http://172.20.10.2:5000/rounds")
   .then((data) => data.json())
   .then((rounds: {id: number, desc: string}[]) => {
     let select = document.querySelector<HTMLSelectElement>('#round-select')!;
@@ -58,7 +60,7 @@ document.querySelector<HTMLButtonElement>('#newround_button')!.onclick = () => {
     return;
   }
 
-  fetch("http://127.0.0.1:5000/create-round", {
+  fetch("http://172.20.10.2:5000/create-round", {
     method: "post",
     headers: {
       'Accept': 'application/json',
@@ -100,7 +102,7 @@ document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
   button.setAttribute("disabled", "true");
   let round_id = document.querySelector<HTMLSelectElement>('#round-select')!.value;
 
-  fetch("http://127.0.0.1:5000/vote", {
+  fetch("http://172.20.10.2:5000/vote", {
     method: "post",
     headers: {
       'Accept': 'application/json',
@@ -140,7 +142,7 @@ document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
 
 document.querySelector<HTMLButtonElement>('#view-results')!.onclick = () => {
   let round_id = document.querySelector<HTMLButtonElement>('#round-select')!.value;
-  fetch(`http://127.0.0.1:5000/results/${round_id}`)
+  fetch(`http://172.20.10.2:5000/results/${round_id}`)
   .then((data) => data.json())
   .then(({guilty, innocent}: {guilty: number, innocent: number}) => {
     document.querySelector<HTMLSpanElement>('#nr-coupable')!.innerText = guilty.toString();

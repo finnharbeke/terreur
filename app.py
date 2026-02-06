@@ -33,7 +33,7 @@ conn.commit()
 
 # https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
 def _corsify(response):
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 def _build_cors_preflight_response():
