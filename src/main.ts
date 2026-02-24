@@ -1,21 +1,77 @@
-const NOTE_TIME = 2000;
-const SUCCESS_TIME = 1000;
-const COOLDOWN = 5000;
+const ERROR_COOLDOWN = 3000;
+const VOTE_COOLDOWN = 5000;
+const UPDATE_INTERVAL = 10000;
 
-let guilty: boolean | null = null;
+const API = "http://172.20.10.2:5000";
+
 let config_open = false;
-let results_open = false;
+
+const vote = (guilty: boolean) => {
+  let coup = document.querySelector<HTMLParagraphElement>('#coupable')!;
+  let noncoup = document.querySelector<HTMLParagraphElement>('#non-coupable')!;
+  coup.setAttribute("disabled", "true");
+  noncoup.setAttribute("disabled", "true");
+  const enable = () => {
+    coup.removeAttribute("disabled");
+    noncoup.removeAttribute("disabled");
+  };
+
+  let round_id = document.querySelector<HTMLSelectElement>('#round-select')!.value;
+
+  fetch(`${API}/vote`, {
+    method: "post",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        round_id,
+        guilty
+    })
+  }).then(() => {
+    // VOTED SUCCESSFULLY
+
+    let loader_span = document.querySelector<HTMLParagraphElement>('#loader_span')!;
+    if (guilty) {
+      loader_span.innerText = "coupable";
+      loader_span.classList.remove("text-blue-300");
+      loader_span.classList.add("text-red-300");
+    } else {
+      loader_span.innerText = "non-coupable";
+      loader_span.classList.remove("text-red-300");
+      loader_span.classList.add("text-blue-300");
+    }
+    let loader = document.querySelector<HTMLDivElement>('#loader')!;
+    loader.classList.remove("hidden");
+
+    setTimeout(() => {
+      loader.classList.add("hidden");
+      enable();
+    }, VOTE_COOLDOWN)
+  })
+  .catch((e) => {
+    // ERROR ON VOTE
+
+    let errortag = document.querySelector<HTMLParagraphElement>('#error')!;
+    errortag.classList.remove("hidden");
+    console.log(e);
+    setTimeout(() => {
+      errortag.classList.add("hidden");
+      enable();
+    }, ERROR_COOLDOWN);
+  })
+}
 
 document.querySelector<HTMLButtonElement>('#coupable')!.onclick = () => {
-  guilty = true;
+  vote(true);
 };
 document.querySelector<HTMLButtonElement>('#non-coupable')!.onclick = () => {
-  guilty = false;
+  vote(false);
 };
 
 document.addEventListener("touchstart", function(){}, true)
 
-const fill_select = () => fetch("http://172.20.10.2:5000/rounds")
+const fill_select = () => fetch(`${API}/rounds`)
   .then((data) => data.json())
   .then((rounds: {id: number, desc: string}[]) => {
     let select = document.querySelector<HTMLSelectElement>('#round-select')!;
@@ -35,11 +91,6 @@ fill_select();
 document.addEventListener("keydown", (e) => {
   if (e.key != 'k' || !e.metaKey)
     return;
-  if (results_open) {
-    document.querySelector<HTMLDivElement>('#results')?.classList.add("hidden");
-    results_open = false;
-    return;
-  }
   if (config_open)
     document.querySelector<HTMLDivElement>('#config')?.classList.add("hidden");
   else
@@ -60,7 +111,7 @@ document.querySelector<HTMLButtonElement>('#newround_button')!.onclick = () => {
     return;
   }
 
-  fetch("http://172.20.10.2:5000/create-round", {
+  fetch(`${API}/create-round`, {
     method: "post",
     headers: {
       'Accept': 'application/json',
@@ -86,63 +137,27 @@ document.querySelector<HTMLButtonElement>('#newround_button')!.onclick = () => {
 }
 
 
-document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
-  let note = document.querySelector<HTMLParagraphElement>('#note')!;
-  console.log(guilty);
-  if (guilty === null) {
-    note.innerHTML = `
-      Vous avez pas encore fait une décision!
-    `;
-    setTimeout(() => {
-      note.innerHTML = ''
-    }, NOTE_TIME);
-    return;
-  }
-  let button = document.querySelector<HTMLParagraphElement>('#judge')!;
-  button.setAttribute("disabled", "true");
-  let round_id = document.querySelector<HTMLSelectElement>('#round-select')!.value;
+// document.querySelector<HTMLButtonElement>('#judge')!.onclick = () => {
+//   let note = document.querySelector<HTMLParagraphElement>('#note')!;
+//   console.log(guilty);
+// };
 
-  fetch("http://172.20.10.2:5000/vote", {
-    method: "post",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        round_id,
-        guilty
-    })
-  }).then(() => {
-      if (guilty) {
-        note.innerHTML = `
-        Vous avez votez <span class="text-amber-300">coupable</span>!
-        `;
-      } else {
-        note.innerHTML = `
-          Vous avez votez <span class="text-fuchsia-300">non coupable</span>!
-        `;
-      }
-  })
-  .catch(() => {
-    note.innerText = '<span class="text-red-300">error:</span> couldn\'t create round';
-  })
-  .finally(() => {
-    guilty = null;
-    setTimeout(() => {
-      button.removeAttribute("disabled");
-      note.innerHTML = '';
-      let loader = document.querySelector<HTMLDivElement>('#loader')!;
-      loader.classList.remove("hidden");
-      setTimeout(() => {
-        loader.classList.add("hidden");
-      }, COOLDOWN)
-    }, SUCCESS_TIME);
-  })
+const clear_results = () => {
+
+  document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = '';
+  document.querySelector<HTMLHeadingElement>('#result_status')!.innerText = '';
+  document.querySelector<HTMLSpanElement>('#nr-coupable')!.innerText = '-';
+  document.querySelector<HTMLSpanElement>('#nr-noncoupable')!.innerText = '-';
+}
+
+document.querySelector<HTMLButtonElement>('#round-select')!.onchange = () => {
+  clear_results();
+  update_results();
 };
 
-document.querySelector<HTMLButtonElement>('#view-results')!.onclick = () => {
+const update_results = () => {
   let round_id = document.querySelector<HTMLButtonElement>('#round-select')!.value;
-  fetch(`http://172.20.10.2:5000/results/${round_id}`)
+  fetch(`${API}/results/${round_id}`)
   .then((data) => data.json())
   .then(({guilty, innocent}: {guilty: number, innocent: number}) => {
     document.querySelector<HTMLSpanElement>('#nr-coupable')!.innerText = guilty.toString();
@@ -150,11 +165,24 @@ document.querySelector<HTMLButtonElement>('#view-results')!.onclick = () => {
     if (guilty == innocent)
       document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'draw';
     else if (guilty > innocent)
-      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'Laura Koch est coupable!';
+      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'laura koch est coupable!';
     else
-      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'Laura Koch est non-coupable!';
+      document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'laura koch est non-coupable!';
     
-    document.querySelector<HTMLSpanElement>('#results')!.classList.remove("hidden");
-    results_open = true;
+    document.querySelector<HTMLHeadingElement>('#result_status')!.innerText = `from ${(new Date()).toLocaleTimeString()}`;
   })
+  .catch((e) => {
+    // ERROR ON FETCH
+
+    document.querySelector<HTMLHeadingElement>('#judgement')!.innerText = 'error: couldn\'t fetch';
+    console.log(e);
+  })
+
 }
+
+// wait for rounds to load
+setTimeout(() => {
+  update_results();
+  setInterval(update_results, UPDATE_INTERVAL);
+
+}, 3000);
