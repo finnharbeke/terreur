@@ -2,7 +2,7 @@ const ERROR_COOLDOWN = 3000;
 const VOTE_COOLDOWN = 5000;
 const UPDATE_INTERVAL = 10000;
 
-const API = "http://172.20.10.2:5000";
+const API = "http://127.0.0.1:8000";
 
 let config_open = false;
 
