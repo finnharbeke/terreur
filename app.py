@@ -90,7 +90,10 @@ def results(round_id):
         return _corsify(make_response(f"round_id {round_id} does not exist", HTTPStatus.NOT_FOUND))
     QUERY = "SELECT guilty FROM vote WHERE round_id = ?"
     votes = conn.execute(QUERY, (round_id,)).fetchall() # [(1,), (0,), ..]
-    votes, = zip(*votes) # (1, 0, ..)
+    if len(votes) == 0:
+        votes = tuple()
+    else:
+        votes, = zip(*votes) # (1, 0, ..)
 
     results = dict(
         guilty = sum(votes),
