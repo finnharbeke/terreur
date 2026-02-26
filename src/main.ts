@@ -157,6 +157,8 @@ document.querySelector<HTMLButtonElement>('#round-select')!.onchange = () => {
 
 const update_results = () => {
   let round_id = document.querySelector<HTMLButtonElement>('#round-select')!.value;
+  if (round_id == undefined || round_id == '')
+    return;
   fetch(`${API}/results/${round_id}`)
   .then((data) => data.json())
   .then(({guilty, innocent}: {guilty: number, innocent: number}) => {
