@@ -2,7 +2,7 @@ const ERROR_COOLDOWN = 3000;
 const VOTE_COOLDOWN = 5000;
 const UPDATE_INTERVAL = 10000;
 
-const API = "http://127.0.0.1:8000";
+const API = "https://lkoch-verdict/api";
 
 let config_open = false;
 
